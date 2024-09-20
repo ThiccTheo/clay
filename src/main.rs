@@ -1,8 +1,11 @@
+mod playing;
+
 use {
     ggez::{
         event::{self, EventHandler, EventLoop},
         Context, ContextBuilder,
     },
+    playing::Playing,
     std::{
         collections::VecDeque,
         fmt::{Debug, Formatter, Result as FormatResult},
@@ -71,12 +74,10 @@ impl EventHandler<()> for App {
             .last_mut()
             .ok_or(())?
             .draw(ctx)
-            .map_err(|action| {
-                self.actions.push_back(action);
-            })
+            .map_err(|action| self.actions.push_back(action))
     }
 }
 
 fn main() {
-    App::new(todo!()).run(ContextBuilder::new("plug", "cuh").build().unwrap());
+    App::new(Box::new(Playing)).run(ContextBuilder::new("", "").build().unwrap());
 }
