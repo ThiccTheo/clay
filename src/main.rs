@@ -1,4 +1,6 @@
+mod object;
 mod playing;
+mod player;
 
 use {
     ggez::{
@@ -79,5 +81,5 @@ impl EventHandler<()> for App {
 }
 
 fn main() {
-    App::new(Box::new(Playing)).run(ContextBuilder::new("", "").build().unwrap());
+    App::new(Box::new(Playing::default())).run(ContextBuilder::new("", "").build().unwrap());
 }
