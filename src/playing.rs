@@ -1,6 +1,10 @@
 use {
     super::{action::Action, object::Object, state::State},
-    ggez::{event::EventHandler, graphics::InstanceArray, Context},
+    ggez::{
+        event::EventHandler,
+        graphics::{Canvas, DrawParam, InstanceArray},
+        Context,
+    },
     maplit::hashmap,
     std::collections::HashMap,
 };
@@ -28,12 +32,19 @@ impl EventHandler<Action> for Playing {
             this.update(others, ctx);
         }
         self.objects.retain(|obj| obj.is_active());
-
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> Result<(), Action> {
-        for obj in &self.objects {}
+        let mut canvas = Canvas::from_frame(ctx, None);
+        for obj in &self.objects {
+            obj.draw(self.batches.get_mut(&obj.id()));
+        }
+        self.batches.values_mut().for_each(|batch| {
+            canvas.draw(batch, DrawParam::default());
+            batch.clear()
+        });
+        canvas.finish(ctx);
         Ok(())
     }
 }
