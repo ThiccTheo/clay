@@ -1,14 +1,22 @@
 use {
-    super::{object::Object, Action},
-    ggez::{event::EventHandler, graphics::InstanceArray, Context}, std::collections::HashMap,
+    super::{action::Action, object::Object, state::State},
+    ggez::{event::EventHandler, graphics::InstanceArray, Context},
+    maplit::hashmap,
+    std::collections::HashMap,
 };
-
-
 
 #[derive(Default)]
 pub struct Playing {
     objects: Vec<Box<dyn Object>>,
-	batches: HashMap<u8, InstanceArray>,
+    batches: HashMap<u8, InstanceArray>,
+}
+
+impl State for Playing {
+    fn enter(&mut self, ctx: &mut Context) {
+        self.batches = hashmap! {
+            10 => InstanceArray::new(ctx, None),
+        };
+    }
 }
 
 impl EventHandler<Action> for Playing {
@@ -25,10 +33,7 @@ impl EventHandler<Action> for Playing {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> Result<(), Action> {
-		for obj in &self.objects {
-			let batch = InstanceArray::new(todo!(), todo!());
-			batch.resize(gfx, new_capacity);
-		}
+        for obj in &self.objects {}
         Ok(())
     }
 }
