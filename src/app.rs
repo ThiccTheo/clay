@@ -7,12 +7,18 @@ use {
     std::collections::VecDeque,
 };
 
+/// Manages the app states.
+/// 
+/// Schedules update and draw calling.
 pub struct App {
     states: Vec<Box<dyn State>>,
     actions: VecDeque<Action>,
 }
 
 impl App {
+    /// Creates a new `App`.
+    /// 
+    /// * `initial_state` - First state to be run when application starts.
     pub fn new(initial_state: Box<dyn State>) -> Self {
         Self {
             states: vec![initial_state],
@@ -20,6 +26,26 @@ impl App {
         }
     }
 
+    /// Runs the `App`.
+    /// 
+    /// Must be called after `App` creation, otherwise, the application
+    /// window will not spawn.
+    /// 
+    /// * `cfg` - Necessary configuration objects for app to run and tasks to be scheduled.
+    /// Can be obtained in many ways.
+    /// 
+    /// # Example
+    /// ```
+    /// fn main() {
+    ///     App::new(Box::new(Playing::default())).run(
+    ///         ContextBuilder::new("", "")
+    ///             .window_setup(WindowSetup::default().title("Hi Mom!"))
+    ///             .window_mode(WindowMode::default().dimensions(1280., 720.))
+    ///             .build()
+    ///             .unwrap()
+    ///     );
+    /// }
+    /// ```
     pub fn run(self, cfg: (Context, EventLoop<()>)) {
         event::run(cfg.0, cfg.1, self);
     }
