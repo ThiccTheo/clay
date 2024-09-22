@@ -1,6 +1,6 @@
 use {
-    super::{id::Id, object::Object, sprite_sheet::SpriteSheet},
-    ggez::{graphics::InstanceArray, Context},
+    super::{batch::Batch, id::Id, object::Object},
+    ggez::Context,
     std::collections::HashMap,
 };
 
@@ -18,12 +18,7 @@ pub trait State {
 
     fn objects(&mut self) -> &mut Vec<Box<dyn Object>>;
 
-    fn batches(&mut self) -> &mut HashMap<Id, (InstanceArray, SpriteSheet)>;
+    fn batches(&mut self) -> &mut HashMap<Id, Batch>;
 
-    fn package(
-        &mut self,
-    ) -> (
-        &mut Vec<Box<dyn Object>>,
-        &mut HashMap<Id, (InstanceArray, SpriteSheet)>,
-    );
+    fn package(&mut self) -> (&mut Vec<Box<dyn Object>>, &mut HashMap<Id, Batch>);
 }

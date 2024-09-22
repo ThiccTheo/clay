@@ -2,7 +2,7 @@ use {
     super::{action::Action, state::State},
     ggez::{
         event::{self, EventHandler, EventLoop},
-        graphics::{Canvas, Color, DrawParam, Image, Rect},
+        graphics::{Canvas, Color, DrawParam},
         Context, GameResult,
     },
     std::{collections::VecDeque, iter::FromIterator},
@@ -97,9 +97,9 @@ impl EventHandler for App {
             let Some(batch) = batches.get_mut(&obj.id()) else {
                 continue;
             };
-            batch.0.push(
+            batch.push(
                 DrawParam {
-                    src: batch.1.uv_rect(obj.sprite_sheet_index()),
+                    src: batch.uv_rect(obj.sprite_sheet_index()),
                     transform: obj.transform().unwrap_or_default(),
                     z: obj.id().0.into(),
                     ..Default::default()
@@ -108,8 +108,8 @@ impl EventHandler for App {
             );
         }
         batches.values_mut().for_each(|batch| {
-            canvas.draw(&batch.0, DrawParam::default());
-            batch.0.clear()
+            canvas.draw(batch.instance_arr(), DrawParam::default());
+            batch.clear()
         });
         canvas.finish(ctx)
     }
