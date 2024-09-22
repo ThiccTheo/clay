@@ -1,9 +1,9 @@
 use {
-    super::{action::Action, id::Id, object::Object, state::State},
-    crate::player::Player,
+    super::{id::Id, object::Object, state::State},
+    crate::{player::Player, sprite_sheet::SpriteSheet},
     ggez::{
-        event::EventHandler,
-        graphics::{Canvas, Color, DrawParam, Image, InstanceArray},
+        glam::Vec2,
+        graphics::{Image, InstanceArray},
         Context,
     },
     std::collections::HashMap,
@@ -12,49 +12,35 @@ use {
 #[derive(Default)]
 pub struct Playing {
     objects: Vec<Box<dyn Object>>,
-    batches: HashMap<Id, InstanceArray>,
+    batches: HashMap<Id, (InstanceArray, SpriteSheet)>,
 }
 
 impl State for Playing {
     fn enter(&mut self, ctx: &mut Context) {
         self.batches.insert(
             Player::ID,
-            InstanceArray::new(ctx, Image::from_path(ctx, "\\player.png").unwrap()),
+            (
+                InstanceArray::new(ctx, Image::from_path(ctx, "\\player.png").unwrap()),
+                SpriteSheet::new(Vec2::splat(128.), 2, 2),
+            ),
         );
         self.objects.push(Box::new(Player::new()));
     }
-}
 
-impl EventHandler<Action> for Playing {
-    fn update(&mut self, ctx: &mut Context) -> Result<(), Action> {
-        for i in 0..self.objects.len() {
-            let (before, tmp) = self.objects.split_at_mut(i);
-            let (this, after) = tmp.split_first_mut().unwrap();
-            let others = before.iter_mut().chain(after.iter_mut());
-            this.tick(others, ctx);
-        }
-        self.objects.retain(|obj| obj.is_active());
-        Ok(())
+    fn objects(&mut self) -> &mut Vec<Box<dyn Object>> {
+        &mut self.objects
     }
 
-    fn draw(&mut self, ctx: &mut Context) -> Result<(), Action> {
-        let mut canvas = Canvas::from_frame(ctx, Color::WHITE);
-        for obj in self.objects.iter().filter(|obj| obj.is_visible()) {
-            let Some(batch) = self.batches.get_mut(&obj.id()) else {
-                continue;
-            };
-            batch.push(DrawParam {
-                src: obj.uv_rect().unwrap_or_default(),
-                transform: obj.transform().unwrap_or_default(),
-                z: obj.id().0.into(),
-                ..Default::default()
-            });
-        }
-        self.batches.values_mut().for_each(|batch| {
-            canvas.draw(batch, DrawParam::default());
-            batch.clear()
-        });
-        drop(canvas.finish(ctx));
-        Ok(())
+    fn batches(&mut self) -> &mut HashMap<Id, (InstanceArray, SpriteSheet)> {
+        &mut self.batches
+    }
+
+    fn package(
+        &mut self,
+    ) -> (
+        &mut Vec<Box<dyn Object>>,
+        &mut HashMap<Id, (InstanceArray, SpriteSheet)>,
+    ) {
+        (&mut self.objects, &mut self.batches)
     }
 }

@@ -1,4 +1,7 @@
-use ggez::{glam::Vec2, mint::{Point2, Vector2}};
+use ggez::{
+    glam::Vec2,
+    mint::{Point2, Vector2},
+};
 
 use crate::prelude::*;
 
@@ -13,12 +16,7 @@ impl Player {
     pub fn new() -> Self {
         Self {
             is_active: true,
-            xform: Transform::Values {
-                dest: Vec2::ZERO.into(),
-                rotation: 0.,
-                scale: Vec2::splat(1.).into(),
-                offset: Vec2::ZERO.into(),
-            },
+            xform: Transform::default(),
         }
     }
 }
@@ -28,8 +26,8 @@ impl Object for Player {
         Self::ID
     }
 
-    fn tick(&mut self, others: World, ctx: &mut Context) {
-        
+    fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>) {
+        *action = None;
     }
 
     fn is_active(&self) -> bool {
@@ -38,6 +36,10 @@ impl Object for Player {
 
     fn transform(&self) -> Option<Transform> {
         Some(self.xform)
+    }
+
+    fn sprite_sheet_index(&self) -> usize {
+        3
     }
 
     fn as_any_ref(&self) -> &dyn Any {

@@ -2,7 +2,8 @@ use {
     super::{action::Action, state::State},
     ggez::{
         event::{self, EventHandler, EventLoop},
-        Context,
+        graphics::{Canvas, Color, DrawParam, Image, Rect},
+        Context, GameResult,
     },
     std::{collections::VecDeque, iter::FromIterator},
 };
@@ -70,21 +71,46 @@ impl App {
     }
 }
 
-impl EventHandler<()> for App {
-    fn update(&mut self, ctx: &mut Context) -> Result<(), ()> {
+impl EventHandler for App {
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
         self.refresh(ctx);
-        self.states
-            .last_mut()
-            .ok_or(())?
-            .update(ctx)
-            .map_err(|_| ())
+        let mut action = None;
+        let cur_state = self.states.last_mut().unwrap();
+        for i in 0..cur_state.objects().len() {
+            let (before, tmp) = cur_state.objects().split_at_mut(i);
+            let (this, after) = tmp.split_first_mut().unwrap();
+            let others = before.iter_mut().chain(after.iter_mut());
+            this.tick(others, ctx, &mut action);
+        }
+        cur_state.objects().retain(|obj| obj.is_active());
+        if let Some(action) = action {
+            self.actions.push_back(action);
+        }
+        Ok(())
     }
 
-    fn draw(&mut self, ctx: &mut Context) -> Result<(), ()> {
-        self.states
-            .last_mut()
-            .ok_or(())?
-            .draw(ctx)
-            .map_err(|action| self.actions.push_back(action))
+    fn draw(&mut self, ctx: &mut Context) -> GameResult {
+        let cur_state = self.states.last_mut().unwrap();
+        let (objs, batches) = cur_state.package();
+        let mut canvas = Canvas::from_frame(ctx, Color::WHITE);
+        for obj in objs.iter().filter(|obj| obj.is_visible()) {
+            let Some(batch) = batches.get_mut(&obj.id()) else {
+                continue;
+            };
+            batch.0.push(
+                DrawParam {
+                    src: batch.1.uv_rect(obj.sprite_sheet_index()),
+                    transform: obj.transform().unwrap_or_default(),
+                    z: obj.id().0.into(),
+                    ..Default::default()
+                }
+                .dest(ggez::glam::Vec2::splat(10.)),
+            );
+        }
+        batches.values_mut().for_each(|batch| {
+            canvas.draw(&batch.0, DrawParam::default());
+            batch.0.clear()
+        });
+        canvas.finish(ctx)
     }
 }

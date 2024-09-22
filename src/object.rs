@@ -1,10 +1,8 @@
 use {
-    super::{id::Id, world::World},
-    ggez::{
+    super::{id::Id, world::World}, crate::action::Action, ggez::{
         graphics::{Rect, Transform},
         Context,
-    },
-    std::any::Any,
+    }, std::any::Any
 };
 
 /// Cross between OOP and ECS world objects.
@@ -40,11 +38,7 @@ pub trait Object {
     ///
     /// * `others` - All other objects in the state excluding `self`.
     /// * `ctx` - App context.
-    fn tick(&mut self, others: World, ctx: &mut Context);
-
-    fn uv_rect(&self) -> Option<Rect> {
-        None
-    }
+    fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>);
 
     /// Whether or not `self` is active.
     ///
@@ -95,6 +89,10 @@ pub trait Object {
     /// This function is supposed to be used by the engine and for world interactions.
     fn collider(&self) -> Option<Rect> {
         None
+    }
+
+    fn sprite_sheet_index(&self) -> usize {
+        0
     }
 
     /// Helper function for casting `&dyn Object` to `&dyn Any`.

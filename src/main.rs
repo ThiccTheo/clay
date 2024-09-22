@@ -7,6 +7,7 @@ mod playing;
 mod prelude;
 mod state;
 mod world;
+mod sprite_sheet;
 
 use {
     app::App,
