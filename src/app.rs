@@ -4,11 +4,11 @@ use {
         event::{self, EventHandler, EventLoop},
         Context,
     },
-    std::collections::VecDeque,
+    std::{collections::VecDeque, iter::FromIterator},
 };
 
 /// Manages the app states.
-/// 
+///
 /// Schedules update and draw calling.
 pub struct App {
     states: Vec<Box<dyn State>>,
@@ -17,23 +17,23 @@ pub struct App {
 
 impl App {
     /// Creates a new `App`.
-    /// 
+    ///
     /// * `initial_state` - First state to be run when application starts.
     pub fn new(initial_state: Box<dyn State>) -> Self {
         Self {
-            states: vec![initial_state],
-            actions: VecDeque::default(),
+            actions: VecDeque::from_iter([Action::Create(initial_state)]),
+            states: Vec::default(),
         }
     }
 
     /// Runs the `App`.
-    /// 
+    ///
     /// Must be called after `App` creation, otherwise, the application
     /// window will not spawn.
-    /// 
+    ///
     /// * `cfg` - Necessary configuration objects for app to run and tasks to be scheduled.
     /// Can be obtained in many ways.
-    /// 
+    ///
     /// # Example
     /// ```
     /// fn main() {
