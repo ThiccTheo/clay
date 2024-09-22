@@ -5,7 +5,6 @@ mod playing;
 mod prelude;
 mod state;
 mod world;
-mod player;
 
 use {
     app::App,

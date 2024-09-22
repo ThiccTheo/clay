@@ -5,7 +5,6 @@ use {
         graphics::{Canvas, DrawParam, InstanceArray},
         Context,
     },
-    maplit::hashmap,
     std::collections::HashMap,
 };
 
@@ -15,13 +14,7 @@ pub struct Playing {
     batches: HashMap<u8, InstanceArray>,
 }
 
-impl State for Playing {
-    fn enter(&mut self, ctx: &mut Context) {
-        self.batches = hashmap! {
-            10 => InstanceArray::new(ctx, None),
-        };
-    }
-}
+impl State for Playing {}
 
 impl EventHandler<Action> for Playing {
     fn update(&mut self, ctx: &mut Context) -> Result<(), Action> {
@@ -37,14 +30,14 @@ impl EventHandler<Action> for Playing {
 
     fn draw(&mut self, ctx: &mut Context) -> Result<(), Action> {
         let mut canvas = Canvas::from_frame(ctx, None);
-        for obj in &self.objects {
+        for obj in self.objects.iter().filter(|obj| obj.is_visible()) {
             obj.draw(self.batches.get_mut(&obj.id()));
         }
         self.batches.values_mut().for_each(|batch| {
             canvas.draw(batch, DrawParam::default());
             batch.clear()
         });
-        canvas.finish(ctx);
+        drop(canvas.finish(ctx));
         Ok(())
     }
 }
