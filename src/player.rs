@@ -1,3 +1,5 @@
+use std::f32::consts::{FRAC_PI_2, TAU};
+
 use crate::prelude::*;
 
 pub struct Player {
@@ -22,7 +24,6 @@ impl Object for Player {
     }
 
     fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>) {
-        *action = None;
     }
 
     fn is_active(&self) -> bool {
@@ -30,11 +31,11 @@ impl Object for Player {
     }
 
     fn transform(&self) -> Option<Transform> {
-        Some(self.xform)
+        Some(self.xform.clone())
     }
 
     fn sprite_sheet_index(&self) -> Option<usize> {
-        Some(3)
+        Some(2)
     }
 
     fn as_any_ref(&self) -> &dyn Any {

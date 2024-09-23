@@ -7,6 +7,7 @@ mod player;
 mod playing;
 mod prelude;
 mod state;
+mod transform;
 mod world;
 
 use {
@@ -22,7 +23,7 @@ fn main() {
     App::new(Box::new(Playing::default())).run(
         ContextBuilder::new("", "")
             .add_resource_path(format!("{}/assets", env!("CARGO_MANIFEST_DIR")))
-            .window_setup(WindowSetup::default().title("Hi Mom!"))
+            .window_setup(WindowSetup::default().title("Hi Mom!").vsync(false))
             .window_mode(
                 WindowMode::default()
                     .dimensions(1280., 720.)

@@ -28,7 +28,7 @@ pub enum Action {
 
     /// Pops the current state from the top of the stack.
     Destroy,
-    
+
     /// Pops the current state from the top of the stack.
     ///
     /// Pushes a new state to the top of the stack.

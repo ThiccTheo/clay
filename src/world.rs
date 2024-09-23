@@ -4,7 +4,7 @@ use {
 };
 
 /// Iterator of all `Object`s excluding the one being iterated on when this is built.
-/// 
+///
 /// # Example
 /// ```
 /// for i in 0..self.objects.len() {

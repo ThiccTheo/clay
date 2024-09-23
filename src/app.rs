@@ -1,9 +1,9 @@
 use {
-    super::{action::Action, state::State},
+    super::{action::Action, state::State, transform::Transform},
     ggez::{
         event::{self, EventHandler, EventLoop},
         glam::Vec2,
-        graphics::{self, Canvas, Color, DrawParam, Quad, Rect, Transform},
+        graphics::{Canvas, Color, DrawParam, Rect, Transform as Transformation},
         Context, GameResult,
     },
     std::{collections::VecDeque, iter::FromIterator},
@@ -94,7 +94,7 @@ impl EventHandler for App {
         let cur_state = self.states.last_mut().unwrap();
         let (objs, batches) = cur_state.package();
         let (win_width, win_height) = ctx.gfx.size();
-        let mut canvas = Canvas::from_frame(ctx, Color::RED);
+        let mut canvas = Canvas::from_frame(ctx, Color::from_rgba(250, 235, 215, 255));
         canvas.set_screen_coordinates(Rect::new(
             -win_width / 2.,
             win_height / 2.,
@@ -105,22 +105,29 @@ impl EventHandler for App {
             let Some(batch) = batches.get_mut(&obj.id()) else {
                 continue;
             };
+            let xform = obj.transform().unwrap_or_default();
             batch.push(DrawParam {
                 src: batch.uv_rect(obj.sprite_sheet_index().unwrap_or_default()),
-                transform: Transform::Values {
-                    dest: Vec2::new(-640., 360.).into(),
-                    rotation: 0.,
-                    scale: Vec2::new(1., 1.).into(),
-                    offset: (batch.sub_img_size() / 2.).into(),
+                transform: Transformation::Values {
+                    dest: xform.translation.truncate().into(),
+                    rotation: xform.rotation,
+                    scale: xform.scale.into(),
+                    offset: (batch.sub_img_size() / 2. * xform.scale).into(),
                 },
-                z: obj.id().0.into(),
+                z: xform.translation.z as i32,
                 ..Default::default()
             });
         }
-        batches.values_mut().for_each(|batch| {
-            canvas.draw(batch.instance_arr(), DrawParam::default());
-            batch.clear()
-        });
+        batches
+            .values_mut()
+            .filter(|batch| !batch.instance_arr().instances().is_empty())
+            .for_each(|batch| {
+                canvas.draw(
+                    batch.instance_arr(),
+                    DrawParam::default().z(batch.instance_arr().instances()[0].z),
+                );
+                batch.clear()
+            });
         canvas.finish(ctx)
     }
 }

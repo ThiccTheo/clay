@@ -25,7 +25,7 @@ impl State for Playing {
             ))
             .with_sprite_sheet(Vec2::splat(128.), 2, 2),
         );
-        self.objects.push(Box::new(Player::new()));
+        self.objects.push(Box::new(Player::new()))
     }
 
     fn objects(&mut self) -> &mut Vec<Box<dyn Object>> {

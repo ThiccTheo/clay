@@ -1,8 +1,11 @@
 use {
-    super::{id::Id, world::World}, crate::action::Action, ggez::{
-        graphics::{Rect, Transform},
+    super::{id::Id, world::World, transform::Transform},
+    crate::action::Action,
+    ggez::{
+        graphics::Rect,
         Context,
-    }, std::any::Any
+    },
+    std::any::Any,
 };
 
 /// Cross between OOP and ECS world objects.
