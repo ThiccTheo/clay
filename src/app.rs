@@ -2,7 +2,8 @@ use {
     super::{action::Action, state::State},
     ggez::{
         event::{self, EventHandler, EventLoop},
-        graphics::{Canvas, Color, DrawParam},
+        glam::Vec2,
+        graphics::{self, Canvas, Color, DrawParam, Quad, Rect, Transform},
         Context, GameResult,
     },
     std::{collections::VecDeque, iter::FromIterator},
@@ -92,20 +93,29 @@ impl EventHandler for App {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let cur_state = self.states.last_mut().unwrap();
         let (objs, batches) = cur_state.package();
-        let mut canvas = Canvas::from_frame(ctx, Color::WHITE);
+        let (win_width, win_height) = ctx.gfx.size();
+        let mut canvas = Canvas::from_frame(ctx, Color::RED);
+        canvas.set_screen_coordinates(Rect::new(
+            -win_width / 2.,
+            win_height / 2.,
+            win_width,
+            -win_height,
+        ));
         for obj in objs.iter().filter(|obj| obj.is_visible()) {
             let Some(batch) = batches.get_mut(&obj.id()) else {
                 continue;
             };
-            batch.push(
-                DrawParam {
-                    src: batch.uv_rect(obj.sprite_sheet_index()),
-                    transform: obj.transform().unwrap_or_default(),
-                    z: obj.id().0.into(),
-                    ..Default::default()
-                }
-                .dest(ggez::glam::Vec2::splat(10.)),
-            );
+            batch.push(DrawParam {
+                src: batch.uv_rect(obj.sprite_sheet_index().unwrap_or_default()),
+                transform: Transform::Values {
+                    dest: Vec2::new(-640., 360.).into(),
+                    rotation: 0.,
+                    scale: Vec2::new(1., 1.).into(),
+                    offset: (batch.sub_img_size() / 2.).into(),
+                },
+                z: obj.id().0.into(),
+                ..Default::default()
+            });
         }
         batches.values_mut().for_each(|batch| {
             canvas.draw(batch.instance_arr(), DrawParam::default());

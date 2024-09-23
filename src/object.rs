@@ -91,8 +91,8 @@ pub trait Object {
         None
     }
 
-    fn sprite_sheet_index(&self) -> usize {
-        0
+    fn sprite_sheet_index(&self) -> Option<usize> {
+        None
     }
 
     /// Helper function for casting `&dyn Object` to `&dyn Any`.

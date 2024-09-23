@@ -21,7 +21,7 @@ impl State for Playing {
             Player::ID,
             Batch::from(InstanceArray::new(
                 ctx,
-                Image::from_path(ctx, "\\player.png").unwrap(),
+                Image::from_path(ctx, "/player.png").unwrap(),
             ))
             .with_sprite_sheet(Vec2::splat(128.), 2, 2),
         );

@@ -6,6 +6,7 @@ use ggez::{
 pub struct Batch {
     instance_arr: InstanceArray,
     img_size: Vec2,
+    sub_img_size: Vec2,
     rows: usize,
     cols: usize,
 }
@@ -15,6 +16,7 @@ impl Batch {
         self.img_size = img_size;
         self.rows = rows;
         self.cols = cols;
+        self.sub_img_size = self.img_size / Vec2::new(self.cols as f32, self.rows as f32);
         self
     }
 
@@ -23,12 +25,11 @@ impl Batch {
             Rect::one()
         } else {
             let (x, y) = (idx % self.cols, idx / self.cols);
-            let sub_img_size = self.img_size / Vec2::new(self.cols as f32, self.rows as f32);
             self.instance_arr.image().uv_rect(
-                x as u32 * sub_img_size.x as u32,
-                y as u32 * sub_img_size.y as u32,
-                sub_img_size.x as u32,
-                sub_img_size.y as u32,
+                x as u32 * self.sub_img_size.x as u32,
+                y as u32 * self.sub_img_size.y as u32,
+                self.sub_img_size.x as u32,
+                self.sub_img_size.y as u32,
             )
         }
     }
@@ -44,6 +45,10 @@ impl Batch {
     pub fn clear(&mut self) {
         self.instance_arr.clear();
     }
+
+    pub fn sub_img_size(&self) -> Vec2 {
+        self.sub_img_size
+    }
 }
 
 impl From<InstanceArray> for Batch {
@@ -51,6 +56,7 @@ impl From<InstanceArray> for Batch {
         Self {
             instance_arr,
             img_size: Vec2::ONE,
+            sub_img_size: Vec2::ONE,
             rows: 1,
             cols: 1,
         }

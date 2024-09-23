@@ -1,8 +1,3 @@
-use ggez::{
-    glam::Vec2,
-    mint::{Point2, Vector2},
-};
-
 use crate::prelude::*;
 
 pub struct Player {
@@ -38,8 +33,8 @@ impl Object for Player {
         Some(self.xform)
     }
 
-    fn sprite_sheet_index(&self) -> usize {
-        3
+    fn sprite_sheet_index(&self) -> Option<usize> {
+        Some(3)
     }
 
     fn as_any_ref(&self) -> &dyn Any {
