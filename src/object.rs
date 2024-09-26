@@ -1,10 +1,7 @@
 use {
-    super::{id::Id, world::World, transform::Transform},
+    super::{id::Id, transform::Transform, world::World},
     crate::action::Action,
-    ggez::{
-        graphics::Rect,
-        Context,
-    },
+    ggez::{graphics::Rect, Context},
     std::any::Any,
 };
 

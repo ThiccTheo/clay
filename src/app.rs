@@ -1,8 +1,7 @@
 use {
-    super::{action::Action, state::State, transform::Transform},
+    super::{action::Action, state::State},
     ggez::{
         event::{self, EventHandler, EventLoop},
-        glam::Vec2,
         graphics::{Canvas, Color, DrawParam, Rect, Transform as Transformation},
         Context, GameResult,
     },
@@ -124,7 +123,7 @@ impl EventHandler for App {
             .for_each(|batch| {
                 canvas.draw(
                     batch.instance_arr(),
-                    DrawParam::default().z(batch.instance_arr().instances()[0].z),
+                    DrawParam::default().z(batch.instance_arr().instances().first().unwrap().z),
                 );
                 batch.clear()
             });

@@ -1,5 +1,3 @@
-use std::f32::consts::{FRAC_PI_2, TAU};
-
 use crate::prelude::*;
 
 pub struct Player {
@@ -23,8 +21,7 @@ impl Object for Player {
         Self::ID
     }
 
-    fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>) {
-    }
+    fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>) {}
 
     fn is_active(&self) -> bool {
         self.is_active
