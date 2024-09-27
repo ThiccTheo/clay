@@ -1,7 +1,7 @@
 use {
     super::{
-        action::Action, activity::Activity, sprite_sheet_index::SpriteSheetIndex, state::State,
-        transform::Transform, visibility::Visibility,
+        action::Action, active::Active, sprite_sheet_index::SpriteSheetIndex, state::State,
+        transform::Transform, visible::Visible,
     },
     ggez::{
         event::{self, EventHandler, EventLoop},
@@ -11,18 +11,12 @@ use {
     std::{collections::VecDeque, iter::FromIterator},
 };
 
-/// Manages the app states.
-///
-/// Schedules update and draw calling.
 pub struct App {
     states: Vec<Box<dyn State>>,
     actions: VecDeque<Action>,
 }
 
 impl App {
-    /// Creates a new `App`.
-    ///
-    /// * `initial_state` - First state to be run when application starts.
     pub fn new(initial_state: Box<dyn State>) -> Self {
         Self {
             actions: VecDeque::from_iter([Action::Create(initial_state)]),
@@ -30,26 +24,6 @@ impl App {
         }
     }
 
-    /// Runs the `App`.
-    ///
-    /// Must be called after `App` creation, otherwise, the application
-    /// window will not spawn.
-    ///
-    /// * `cfg` - Necessary configuration objects for app to run and tasks to be scheduled.
-    /// Can be obtained in many ways.
-    ///
-    /// # Example
-    /// ```
-    /// fn main() {
-    ///     App::new(Box::new(Playing::default())).run(
-    ///         ContextBuilder::new("", "")
-    ///             .window_setup(WindowSetup::default().title("Hi Mom!"))
-    ///             .window_mode(WindowMode::default().dimensions(1280., 720.))
-    ///             .build()
-    ///             .unwrap()
-    ///     );
-    /// }
-    /// ```
     pub fn run(self, cfg: (Context, EventLoop<()>)) {
         event::run(cfg.0, cfg.1, self);
     }
@@ -78,16 +52,16 @@ impl EventHandler for App {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         self.refresh(ctx);
         let mut action = None;
+        let mut spawns = Vec::default();
         let cur_state = self.states.last_mut().unwrap();
         for i in 0..cur_state.objects().len() {
             let (before, tmp) = cur_state.objects().split_at_mut(i);
             let (this, after) = tmp.split_first_mut().unwrap();
             let others = before.iter_mut().chain(after.iter_mut());
-            this.tick(others, ctx, &mut action);
+            this.tick(others, &mut spawns, &mut action, ctx);
         }
-        cur_state
-            .objects()
-            .retain(|obj| obj.has_single::<Activity>());
+        cur_state.objects().extend(spawns);
+        cur_state.objects().retain(|obj| obj.has_single::<Active>());
         if let Some(action) = action {
             self.actions.push_back(action);
         }
@@ -105,7 +79,7 @@ impl EventHandler for App {
             win_width,
             -win_height,
         ));
-        for obj in objs.iter().filter(|obj| obj.has_single::<Visibility>()) {
+        for obj in objs.iter().filter(|obj| obj.has_single::<Visible>()) {
             let Some(batch) = batches.get_mut(&obj.id()) else {
                 continue;
             };

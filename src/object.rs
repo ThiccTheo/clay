@@ -6,15 +6,16 @@ use {
 
 pub struct Object {
     properties: HashMap<u8, Box<dyn Property>>,
-    tick: fn(&mut Object, World, &mut Context, &mut Option<Action>),
+    tick: fn(&mut Object, World, &mut Vec<Object>, &mut Option<Action>, &mut Context),
     id: u8,
 }
+
 
 impl Object {
     pub fn new<const N: usize>(
         marker: impl Id,
         props: [(u8, Box<dyn Property>); N],
-        tick: fn(&mut Object, World, &mut Context, &mut Option<Action>),
+        tick: fn(&mut Object, World, &mut Vec<Object>, &mut Option<Action>, &mut Context),
     ) -> Self {
         let mut obj = Self {
             properties: HashMap::default(),
@@ -25,8 +26,14 @@ impl Object {
         obj
     }
 
-    pub fn tick(&mut self, others: World, ctx: &mut Context, action: &mut Option<Action>) {
-        (self.tick)(self, others, ctx, action);
+    pub fn tick(
+        &mut self,
+        others: World,
+        spawns: &mut Vec<Object>,
+        action: &mut Option<Action>,
+        ctx: &mut Context,
+    ) {
+        (self.tick)(self, others, spawns, action, ctx);
     }
 
     pub fn id(&self) -> u8 {

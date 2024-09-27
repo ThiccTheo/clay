@@ -3,8 +3,6 @@ mod app;
 mod batch;
 mod id;
 mod object;
-mod player;
-mod playing;
 mod prelude;
 mod state;
 mod transform;
@@ -12,31 +10,30 @@ mod world;
 mod property;
 mod cast;
 mod as_any;
-mod activity;
-mod visibility;
+mod active;
+mod visible;
 mod sprite_sheet_index;
 
-use {
-    app::App,
-    ggez::{
-        conf::{FullscreenType, WindowMode, WindowSetup},
-        ContextBuilder,
-    },
-    playing::Playing,
-};
+// use {
+//     app::App,
+//     ggez::{
+//         conf::{FullscreenType, WindowMode, WindowSetup},
+//         ContextBuilder,
+//     },
+// };
 
 fn main() {
-    App::new(Box::new(Playing::default())).run(
-        ContextBuilder::new("", "")
-            .add_resource_path(format!("{}/assets", env!("CARGO_MANIFEST_DIR")))
-            .window_setup(WindowSetup::default().title("Hi Mom!").vsync(false))
-            .window_mode(
-                WindowMode::default()
-                    .dimensions(1280., 720.)
-                    .fullscreen_type(FullscreenType::Windowed)
-                    .borderless(true),
-            )
-            .build()
-            .unwrap(),
-    );
+    // App::new(Box::new(Playing::default())).run(
+    //     ContextBuilder::new("", "")
+    //         .add_resource_path(format!("{}/assets", env!("CARGO_MANIFEST_DIR")))
+    //         .window_setup(WindowSetup::default().title("Hi Mom!").vsync(false))
+    //         .window_mode(
+    //             WindowMode::default()
+    //                 .dimensions(1280., 720.)
+    //                 .fullscreen_type(FullscreenType::Windowed)
+    //                 .borderless(true),
+    //         )
+    //         .build()
+    //         .unwrap(),
+    // );
 }

@@ -1,11 +1,8 @@
 use {super::{as_any::AsAny, cast::Cast, property::Property, id::Id}, std::any::Any};
 
-pub enum Activity {
-	Active,
-	Inactive,
-}
+pub struct Active;
 
-impl AsAny for Activity {
+impl AsAny for Active {
 	fn as_any_ref(&self) -> &dyn Any {
 		self
 	}
@@ -15,12 +12,12 @@ impl AsAny for Activity {
 	}
 }
 
-impl Id for Activity {
+impl Id for Active {
 	fn id() -> u8 {
 		10
 	}
 }
 
-impl Cast for Activity {}
+impl Cast for Active {}
 
-impl Property for Activity {}
+impl Property for Active {}
