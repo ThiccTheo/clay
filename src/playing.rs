@@ -1,18 +1,18 @@
 use {
-    super::{id::Id, object::Object, state::State},
+    super::{object::Object, state::State},
     crate::{batch::Batch, player::Player},
     ggez::{
         glam::Vec2,
         graphics::{Image, InstanceArray},
         Context,
     },
-    std::collections::HashMap,
+    hashbrown::HashMap,
 };
 
 #[derive(Default)]
 pub struct Playing {
-    objects: Vec<Box<dyn Object>>,
-    batches: HashMap<Id, Batch>,
+    objects: Vec<Object>,
+    batches: HashMap<u8, Batch>,
 }
 
 impl State for Playing {
@@ -28,15 +28,15 @@ impl State for Playing {
         self.objects.push(Box::new(Player::new()))
     }
 
-    fn objects(&mut self) -> &mut Vec<Box<dyn Object>> {
+    fn objects(&mut self) -> &mut Vec<Object> {
         &mut self.objects
     }
 
-    fn batches(&mut self) -> &mut HashMap<Id, Batch> {
+    fn batches(&mut self) -> &mut HashMap<u8, Batch> {
         &mut self.batches
     }
 
-    fn package(&mut self) -> (&mut Vec<Box<dyn Object>>, &mut HashMap<Id, Batch>) {
+    fn package(&mut self) -> (&mut Vec<Object>, &mut HashMap<u8, Batch>) {
         (&mut self.objects, &mut self.batches)
     }
 }

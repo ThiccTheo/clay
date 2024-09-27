@@ -1,2 +1,7 @@
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub struct Id(pub u8);
+pub trait Id {
+    fn id() -> u8;
+
+    fn m_id(&self) -> u8 {
+        Self::id()
+    }
+}

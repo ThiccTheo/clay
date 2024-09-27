@@ -9,6 +9,12 @@ mod prelude;
 mod state;
 mod transform;
 mod world;
+mod property;
+mod cast;
+mod as_any;
+mod activity;
+mod visibility;
+mod sprite_sheet_index;
 
 use {
     app::App,

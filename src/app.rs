@@ -1,5 +1,8 @@
 use {
-    super::{action::Action, state::State},
+    super::{
+        action::Action, activity::Activity, sprite_sheet_index::SpriteSheetIndex, state::State,
+        transform::Transform, visibility::Visibility,
+    },
     ggez::{
         event::{self, EventHandler, EventLoop},
         graphics::{Canvas, Color, DrawParam, Rect, Transform as Transformation},
@@ -82,7 +85,9 @@ impl EventHandler for App {
             let others = before.iter_mut().chain(after.iter_mut());
             this.tick(others, ctx, &mut action);
         }
-        cur_state.objects().retain(|obj| obj.is_active());
+        cur_state
+            .objects()
+            .retain(|obj| obj.has_single::<Activity>());
         if let Some(action) = action {
             self.actions.push_back(action);
         }
@@ -100,13 +105,19 @@ impl EventHandler for App {
             win_width,
             -win_height,
         ));
-        for obj in objs.iter().filter(|obj| obj.is_visible()) {
+        for obj in objs.iter().filter(|obj| obj.has_single::<Visibility>()) {
             let Some(batch) = batches.get_mut(&obj.id()) else {
                 continue;
             };
-            let xform = obj.transform().unwrap_or_default();
+            let xform = obj
+                .get_single_ref::<Transform>()
+                .cloned()
+                .unwrap_or_default();
             batch.push(DrawParam {
-                src: batch.uv_rect(obj.sprite_sheet_index().unwrap_or_default()),
+                src: batch.uv_rect(
+                    obj.get_single_ref::<SpriteSheetIndex>()
+                        .map_or(0, |idx| idx.0),
+                ),
                 transform: Transformation::Values {
                     dest: xform.translation.truncate().into(),
                     rotation: xform.rotation,
