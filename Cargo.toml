@@ -5,7 +5,6 @@ edition = "2021"
 license = "MIT"
 description = "A lightweight, 2D game engine for game jams!"
 repository = "https://github.com/ThiccTheo/clay"
-include = ["assets/"]
 
 [dependencies]
 ggez = "0.9.3"
