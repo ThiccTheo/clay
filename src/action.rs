@@ -3,7 +3,6 @@ use {
     std::fmt::{Debug, Formatter, Result as FormatResult},
 };
 
-#[allow(dead_code)]
 pub enum Action {
     Create(Box<dyn State>),
     Destroy,

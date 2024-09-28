@@ -1,7 +1,14 @@
-pub trait Id {
-    fn id() -> u8;
+use std::any::TypeId;
 
-    fn m_id(&self) -> u8 {
+pub trait Id
+where
+    Self: 'static,
+{
+    fn id() -> TypeId {
+        TypeId::of::<Self>()
+    }
+
+    fn m_id(&self) -> TypeId {
         Self::id()
     }
 }

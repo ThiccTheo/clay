@@ -1,4 +1,8 @@
-use {super::{as_any::AsAny, id::Id, property::Property,}, ggez::glam::{Vec2, Vec3}, std::any::Any};
+use {
+    super::{as_any::AsAny, id::Id, property::Property},
+    ggez::glam::{Vec2, Vec3},
+    std::any::Any,
+};
 
 #[derive(Clone)]
 pub struct Transform {
@@ -45,10 +49,6 @@ impl AsAny for Transform {
     }
 }
 
-impl Id for Transform {
-    fn id() -> u8 {
-        69
-    }
-}
+impl Id for Transform {}
 
 impl Property for Transform {}

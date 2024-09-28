@@ -2,6 +2,7 @@ use {
     super::{batch::Batch, object::Object},
     ggez::Context,
     hashbrown::HashMap,
+    std::any::TypeId,
 };
 
 pub trait State {
@@ -11,7 +12,7 @@ pub trait State {
 
     fn objects(&mut self) -> &mut Vec<Object>;
 
-    fn batches(&mut self) -> &mut HashMap<u8, Batch>;
+    fn batches(&mut self) -> &mut HashMap<TypeId, Batch>;
 
-    fn package(&mut self) -> (&mut Vec<Object>, &mut HashMap<u8, Batch>);
+    fn package(&mut self) -> (&mut Vec<Object>, &mut HashMap<TypeId, Batch>);
 }

@@ -15,10 +15,6 @@ impl AsAny for Visible {
     }
 }
 
-impl Id for Visible {
-    fn id() -> u8 {
-        20
-    }
-}
+impl Id for Visible {}
 
 impl Property for Visible {}

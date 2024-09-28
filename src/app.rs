@@ -17,9 +17,9 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(initial_state: Box<dyn State>) -> Self {
+    pub fn new(state0: Box<dyn State>) -> Self {
         Self {
-            actions: VecDeque::from_iter([Action::Create(initial_state)]),
+            actions: VecDeque::from_iter([Action::Create(state0)]),
             states: Vec::default(),
         }
     }

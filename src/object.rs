@@ -2,19 +2,19 @@ use {
     super::{action::Action, id::Id, property::Property, world::World},
     ggez::Context,
     hashbrown::HashMap,
+    std::any::TypeId,
 };
 
 pub struct Object {
-    properties: HashMap<u8, Box<dyn Property>>,
+    properties: HashMap<TypeId, Box<dyn Property>>,
     tick: fn(&mut Object, World, &mut Vec<Object>, &mut Option<Action>, &mut Context),
-    id: u8,
+    id: TypeId,
 }
-
 
 impl Object {
     pub fn new<const N: usize>(
         marker: impl Id,
-        props: [(u8, Box<dyn Property>); N],
+        props: [(TypeId, Box<dyn Property>); N],
         tick: fn(&mut Object, World, &mut Vec<Object>, &mut Option<Action>, &mut Context),
     ) -> Self {
         let mut obj = Self {
@@ -36,7 +36,7 @@ impl Object {
         (self.tick)(self, others, spawns, action, ctx);
     }
 
-    pub fn id(&self) -> u8 {
+    pub fn id(&self) -> TypeId {
         self.id
     }
 
@@ -54,7 +54,7 @@ impl Object {
 
     pub fn get_many_ref<const N: usize>(
         &self,
-        prop_ids: [u8; N],
+        prop_ids: [TypeId; N],
     ) -> [Option<&Box<dyn Property>>; N] {
         let mut props = [None; N];
         for i in 0..N {
@@ -65,7 +65,7 @@ impl Object {
 
     pub fn get_many_mut<const N: usize>(
         &mut self,
-        prop_ids: [&u8; N],
+        prop_ids: [&TypeId; N],
     ) -> Option<[&mut Box<dyn Property>; N]> {
         self.properties.get_many_mut(prop_ids)
     }
@@ -74,7 +74,7 @@ impl Object {
         self.properties.insert(prop.m_id(), Box::new(prop));
     }
 
-    pub fn attach_many<const N: usize>(&mut self, props: [(u8, Box<dyn Property>); N]) {
+    pub fn attach_many<const N: usize>(&mut self, props: [(TypeId, Box<dyn Property>); N]) {
         for prop in props {
             self.properties.insert(prop.0, prop.1);
         }
@@ -86,7 +86,7 @@ impl Object {
 
     pub fn detach_many<const N: usize>(
         &mut self,
-        prop_ids: [u8; N],
+        prop_ids: [TypeId; N],
     ) -> [Option<Box<dyn Property>>; N] {
         prop_ids.map(|prop_id| self.properties.remove(&prop_id))
     }
@@ -95,7 +95,7 @@ impl Object {
         self.properties.contains_key(&T::id())
     }
 
-    pub fn has_many<const N: usize>(&self, prop_ids: [u8; N]) -> bool {
+    pub fn has_many<const N: usize>(&self, prop_ids: [TypeId; N]) -> bool {
         prop_ids
             .iter()
             .all(|prop_id| self.properties.contains_key(prop_id))

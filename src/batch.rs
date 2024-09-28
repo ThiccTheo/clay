@@ -5,7 +5,6 @@ use ggez::{
 
 pub struct Batch {
     instance_arr: InstanceArray,
-    img_size: Vec2,
     sub_img_size: Vec2,
     rows: usize,
     cols: usize,
@@ -13,10 +12,9 @@ pub struct Batch {
 
 impl Batch {
     pub fn with_sprite_sheet(mut self, img_size: Vec2, rows: usize, cols: usize) -> Self {
-        self.img_size = img_size;
         self.rows = rows;
         self.cols = cols;
-        self.sub_img_size = self.img_size / Vec2::new(self.cols as f32, self.rows as f32);
+        self.sub_img_size = img_size / Vec2::new(self.cols as f32, self.rows as f32);
         self
     }
 
@@ -55,7 +53,6 @@ impl From<InstanceArray> for Batch {
     fn from(instance_arr: InstanceArray) -> Self {
         Self {
             instance_arr,
-            img_size: Vec2::ONE,
             sub_img_size: Vec2::ONE,
             rows: 1,
             cols: 1,
